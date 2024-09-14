@@ -10,15 +10,16 @@ int is_delimiter_or_newline(char c, const char* delimiter) {
     return (c == '\n' || strchr(delimiter, c) != NULL);
 }
 
-// Main function to replace newline and delimiter characters with commas
+// Function to replace newlines and delimiters with commas
 char* replace_with_commas(const char* input, const char* delimiter) {
     char* result = strdup(input);
     if (!result) return NULL;  // Error handling if memory allocation fails
 
-    char* p = result;
-    while (*p) {
-        *p = (*p == '\n' || strchr(delimiter, *p)) ? ',' : *p;
-        p++;
+    // Traverse and replace delimiters and newlines
+    for (char* p = result; *p != '\0'; ++p) {
+        if (*p == '\n' || strchr(delimiter, *p)) {
+            *p = ',';  // Replace with comma
+        }
     }
 
     return result;
