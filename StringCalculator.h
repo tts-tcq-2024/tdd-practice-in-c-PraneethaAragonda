@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <limits.h>
+#include <string.h>
+#include <ctype.h>
 
-// Define the maximum number to consider
 #define MAX_NUMBER 1000
 
-// Function declarations
+// Function Declaration
 char* replace_with_commas(const char* input, const char* delimiter);
 char* find_delimiter(const char* input);
 void find_negatives(const char* updated_input);
@@ -15,33 +14,31 @@ int add(const char* input);
 
 // Helper function to replace delimiters with commas
 char* replace_with_commas(const char* input, const char* delimiter) {
-    char* result = strdup(input);  // Create a mutable copy of the input
+    char* result = strdup(input);
     char* p = result;
-
     while (*p) {
         if (*p == '\n' || strchr(delimiter, *p)) {
             *p = ',';
         }
         p++;
     }
-
     return result;
 }
 
-// Helper function to find the delimiter and prepare the number string
+// Helper function to find the delimiter and format the string
 char* find_delimiter(const char* input) {
     char* delimiter = ",";
     char* numbers_str = strdup(input);
     if (strncmp(input, "//", 2) == 0) {
         char* newline_pos = strchr(numbers_str, '\n');
         if (newline_pos) {
-            *newline_pos = '\0';  // Null-terminate the delimiter part
-            delimiter = numbers_str + 2;  // Set the delimiter
-            numbers_str = newline_pos + 1;  // Set the numbers string
+            *newline_pos = '\0';
+            delimiter = numbers_str + 2;
+            numbers_str = newline_pos + 1;
         }
     }
     char* updated_input = replace_with_commas(numbers_str, delimiter);
-    free(numbers_str);  // Free the original copy
+    free(numbers_str);
     return updated_input;
 }
 
@@ -50,8 +47,7 @@ void find_negatives(const char* updated_input) {
     char* input_copy = strdup(updated_input);
     char* token = strtok(input_copy, ",");
     while (token) {
-        int number = atoi(token);
-        if (number < 0) {
+        if (atoi(token) < 0) {
             free(input_copy);
             fprintf(stderr, "Error: Negatives not allowed\n");
             exit(EXIT_FAILURE);
@@ -61,7 +57,7 @@ void find_negatives(const char* updated_input) {
     free(input_copy);
 }
 
-// Helper function to find the sum of numbers
+// Helper function to calculate the sum of numbers
 int find_sum(const char* updated_input) {
     char* input_copy = strdup(updated_input);
     char* token = strtok(input_copy, ",");
@@ -77,15 +73,14 @@ int find_sum(const char* updated_input) {
     return sum;
 }
 
-// Main function to add numbers from the input string
+// Main add function
 int add(const char* input) {
     if (input == NULL || strlen(input) == 0) {
         return 0;
     }
-
     char* updated_input = find_delimiter(input);
     find_negatives(updated_input);
     int sum = find_sum(updated_input);
-    free(updated_input);  // Free the updated input string
+    free(updated_input);
     return sum;
 }
