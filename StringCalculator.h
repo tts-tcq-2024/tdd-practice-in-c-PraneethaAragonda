@@ -5,40 +5,33 @@
 
 #define MAX_NUMBER 1000
 
-// Helper function to check if a character is a newline or in the delimiter
-int is_delimiter_or_newline(char c, const char* delimiter) {
-    return (c == '\n' || strchr(delimiter, c) != NULL);
-}
-
 // Main function to replace newline and delimiter characters with commas
 char* replace_with_commas(const char* input, const char* delimiter) {
     char* result = strdup(input);
     if (!result) return NULL;  // Error handling if memory allocation fails
 
+    // Use strpbrk to find the next occurrence of a delimiter or newline
     char* p = result;
-    while (*p) {
-        // Use the helper function to check if character should be replaced
-        if (is_delimiter_or_newline(*p, delimiter)) {
-            *p = ',';  // Replace with comma
-        }
+    while ((p = strpbrk(p, "\n")) != NULL || (p = strpbrk(p, delimiter)) != NULL) {
+        *p = ',';  // Replace with a comma
         p++;
     }
+
     return result;
 }
 
-// Helper function to find the delimiter and format the string
+// Helper function to check if a character is a newline or in the delimiter
 char* find_delimiter(const char* input) {
-    char delimiter[2] = ","; // Default delimiter
+    char* delimiter = ",";
     char* numbers_str = strdup(input);
-    
     if (strncmp(input, "//", 2) == 0) {
         char* newline_pos = strchr(numbers_str, '\n');
         if (newline_pos) {
-            delimiter[0] = *(numbers_str + 2); // Pick custom delimiter
-            numbers_str = newline_pos + 1;     // Numbers part starts after \n
+            *newline_pos = '\0';
+            delimiter = numbers_str + 2;
+            numbers_str = newline_pos + 1;
         }
     }
-    
     char* updated_input = replace_with_commas(numbers_str, delimiter);
     free(numbers_str);
     return updated_input;
