@@ -5,19 +5,42 @@
 
 #define MAX_NUMBER 1000
 
-/char* replace_with_commas(const char* input, const char* delimiter) {
-    char* result = strdup(input);  // Create a copy of the input string
-    if (!result) return NULL;      // Check if memory allocation fails
+// Helper function to check if a character is a newline or in the delimiter
+int is_delimiter_or_newline(char c, const char* delimiter) {
+    return (c == '\n' || strchr(delimiter, c) != NULL);
+}
 
-    char* p = result;
-    while (*p) {
-        if (strchr(delimiter, *p) || *p == '\n') {
-            *p = ',';  // Replace the character with a comma
+// Main function to replace newline and delimiter characters with commas
+char* replace_with_commas(const char* input, const char* delimiter) {
+    char* result = strdup(input);
+    if (!result) return NULL;  // Error handling if memory allocation fails
+
+    for (char* p = result; *p != '\0'; ++p) {
+        // Replace newline or delimiter with a comma
+        if (*p == '\n' || strchr(delimiter, *p)) {
+            *p = ',';  // Replace character with a comma
         }
-        p++;
     }
 
     return result;
+}
+
+// Helper function to find the delimiter and format the string
+char* find_delimiter(const char* input) {
+    char delimiter[2] = ","; // Default delimiter
+    char* numbers_str = strdup(input);
+    
+    if (strncmp(input, "//", 2) == 0) {
+        char* newline_pos = strchr(numbers_str, '\n');
+        if (newline_pos) {
+            delimiter[0] = *(numbers_str + 2); // Pick custom delimiter
+            numbers_str = newline_pos + 1;     // Numbers part starts after \n
+        }
+    }
+    
+    char* updated_input = replace_with_commas(numbers_str, delimiter);
+    free(numbers_str);
+    return updated_input;
 }
 
 // Helper function to check for negative numbers
@@ -61,23 +84,4 @@ int add(const char* input) {
     int sum = find_sum(updated_input);
     free(updated_input);
     return sum;
-}
-
-// Main function for testing
-int main() {
-    // Example test cases
-    const char* test_cases[] = {
-        "",
-        "praneetha",
-        "1",
-        "1,2",
-        "1\n2,3",
-        "//;\n1;2",
-        "2+1001",
-        "2+1000"
-    };
-    for (int i = 0; i < sizeof(test_cases) / sizeof(test_cases[0]); i++) {
-        printf("Input: \"%s\" -> Result: %d\n", test_cases[i], add(test_cases[i]));
-    }
-    return 0;
 }
