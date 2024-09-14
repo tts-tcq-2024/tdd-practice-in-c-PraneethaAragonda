@@ -15,11 +15,10 @@ char* replace_with_commas(const char* input, const char* delimiter) {
     char* result = strdup(input);
     if (!result) return NULL;  // Error handling if memory allocation fails
 
-    for (char* p = result; *p != '\0'; ++p) {
-        // Replace newline or delimiter with a comma
-        if (*p == '\n' || strchr(delimiter, *p)) {
-            *p = ',';  // Replace character with a comma
-        }
+    char* p = result;
+    while (*p) {
+        *p = (*p == '\n' || strchr(delimiter, *p)) ? ',' : *p;
+        p++;
     }
 
     return result;
@@ -65,9 +64,7 @@ int find_sum(const char* updated_input) {
     int sum = 0;
     while (token) {
         int number = atoi(token);
-        if (number <= MAX_NUMBER) {
-            sum += number;
-        }
+        sum += (number <= MAX_NUMBER) ? number : 0;
         token = strtok(NULL, ",");
     }
     free(input_copy);
