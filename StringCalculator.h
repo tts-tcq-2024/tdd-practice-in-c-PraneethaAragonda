@@ -5,36 +5,19 @@
 
 #define MAX_NUMBER 1000
 
-// Main function to replace newline and delimiter characters with commas
-char* replace_with_commas(const char* input, const char* delimiter) {
-    char* result = strdup(input);
-    if (!result) return NULL;  // Error handling if memory allocation fails
+/char* replace_with_commas(const char* input, const char* delimiter) {
+    char* result = strdup(input);  // Create a copy of the input string
+    if (!result) return NULL;      // Check if memory allocation fails
 
-    // Use strpbrk to find the next occurrence of a delimiter or newline
     char* p = result;
-    while ((p = strpbrk(p, "\n")) != NULL || (p = strpbrk(p, delimiter)) != NULL) {
-        *p = ',';  // Replace with a comma
+    while (*p) {
+        if (strchr(delimiter, *p) || *p == '\n') {
+            *p = ',';  // Replace the character with a comma
+        }
         p++;
     }
 
     return result;
-}
-
-// Helper function to check if a character is a newline or in the delimiter
-char* find_delimiter(const char* input) {
-    char* delimiter = ",";
-    char* numbers_str = strdup(input);
-    if (strncmp(input, "//", 2) == 0) {
-        char* newline_pos = strchr(numbers_str, '\n');
-        if (newline_pos) {
-            *newline_pos = '\0';
-            delimiter = numbers_str + 2;
-            numbers_str = newline_pos + 1;
-        }
-    }
-    char* updated_input = replace_with_commas(numbers_str, delimiter);
-    free(numbers_str);
-    return updated_input;
 }
 
 // Helper function to check for negative numbers
@@ -78,4 +61,23 @@ int add(const char* input) {
     int sum = find_sum(updated_input);
     free(updated_input);
     return sum;
+}
+
+// Main function for testing
+int main() {
+    // Example test cases
+    const char* test_cases[] = {
+        "",
+        "praneetha",
+        "1",
+        "1,2",
+        "1\n2,3",
+        "//;\n1;2",
+        "2+1001",
+        "2+1000"
+    };
+    for (int i = 0; i < sizeof(test_cases) / sizeof(test_cases[0]); i++) {
+        printf("Input: \"%s\" -> Result: %d\n", test_cases[i], add(test_cases[i]));
+    }
+    return 0;
 }
