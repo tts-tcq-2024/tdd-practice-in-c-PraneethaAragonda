@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #define MAX_NUMBER 1000
 
@@ -10,17 +9,23 @@ int is_delimiter_or_newline(char c, const char* delimiter) {
     return (c == '\n' || strchr(delimiter, c) != NULL);
 }
 
+// New helper function to replace specific characters with a replacement
+void replace_characters(char* str, const char* targets, char replacement) {
+    char* p = str;
+    while ((p = strpbrk(p, targets)) != NULL) {  // Find target characters
+        *p = replacement;  // Replace them with the given character
+        p++;
+    }
+}
+
 // Function to replace newlines and delimiters with commas
 char* replace_with_commas(const char* input, const char* delimiter) {
     char* result = strdup(input);
     if (!result) return NULL;  // Error handling if memory allocation fails
 
-    // Traverse and replace delimiters and newlines
-    for (char* p = result; *p != '\0'; ++p) {
-        if (*p == '\n' || strchr(delimiter, *p)) {
-            *p = ',';  // Replace with comma
-        }
-    }
+    // Replace newlines and delimiters
+    replace_characters(result, "\n", ',');
+    replace_characters(result, delimiter, ',');
 
     return result;
 }
@@ -29,7 +34,7 @@ char* replace_with_commas(const char* input, const char* delimiter) {
 char* find_delimiter(const char* input) {
     char delimiter[2] = ","; // Default delimiter
     char* numbers_str = strdup(input);
-    
+
     if (strncmp(input, "//", 2) == 0) {
         char* newline_pos = strchr(numbers_str, '\n');
         if (newline_pos) {
@@ -37,7 +42,7 @@ char* find_delimiter(const char* input) {
             numbers_str = newline_pos + 1;     // Numbers part starts after \n
         }
     }
-    
+
     char* updated_input = replace_with_commas(numbers_str, delimiter);
     free(numbers_str);
     return updated_input;
