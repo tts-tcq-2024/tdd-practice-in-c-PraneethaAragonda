@@ -4,12 +4,7 @@
 
 #define MAX_NUMBER 1000
 
-// Helper function to check if a character is a newline or in the delimiter
-int is_delimiter_or_newline(char c, const char* delimiter) {
-    return (c == '\n' || strchr(delimiter, c) != NULL);
-}
-
-// New helper function to replace specific characters with a replacement
+// Helper function to replace specific characters with a replacement
 void replace_characters(char* str, const char* targets, char replacement) {
     char* p = str;
     while ((p = strpbrk(p, targets)) != NULL) {  // Find target characters
