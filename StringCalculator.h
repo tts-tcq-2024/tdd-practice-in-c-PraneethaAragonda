@@ -14,32 +14,34 @@ void replace_characters(char* str, const char* targets, char replacement) {
 }
 
 // Function to replace newlines and delimiters with commas
-char* replace_with_commas(const char* input, const char* delimiter) {
+char* replace_with_commas(const char* input, const char* delimiters) {
     char* result = strdup(input);
     if (!result) return NULL;  // Error handling if memory allocation fails
 
     // Replace newlines and delimiters
     replace_characters(result, "\n", ',');
-    replace_characters(result, delimiter, ',');
+    replace_characters(result, delimiters, ',');
 
     return result;
 }
 
-// Helper function to find the delimiter and format the string
-char* find_delimiter(const char* input) {
-    char delimiter[2] = ","; // Default delimiter
-    char* numbers_str = strdup(input);
-
-    if (strncmp(input, "//", 2) == 0) {
-        char* newline_pos = strchr(numbers_str, '\n');
-        if (newline_pos) {
-            delimiter[0] = *(numbers_str + 2); // Pick custom delimiter
-            numbers_str = newline_pos + 1;     // Numbers part starts after \n
-        }
+// Helper function to extract custom delimiters or use default ones
+static const char* extract_custom_delimiter(const char* input, char* delimiters) {
+    if (input[0] == '/' && input[1] == '/') {
+        delimiters[0] = input[2];  // Custom delimiter after "//"
+        delimiters[1] = '\n';      // Delimiter includes newline
+        delimiters[2] = '\0';      // Null-terminate
+        return strchr(input, '\n') + 1; // Return the string after the newline
     }
+    strcpy(delimiters, ",\n");     // Default delimiters: comma and newline
+    return input;                  // Return the original string if no custom delimiter
+}
 
-    char* updated_input = replace_with_commas(numbers_str, delimiter);
-    free(numbers_str);
+// Function to replace delimiters and newlines with commas
+char* find_delimiter(const char* input) {
+    char delimiters[3];            // Delimiters (can hold custom or default)
+    const char* numbers_str = extract_custom_delimiter(input, delimiters); 
+    char* updated_input = replace_with_commas(numbers_str, delimiters); 
     return updated_input;
 }
 
